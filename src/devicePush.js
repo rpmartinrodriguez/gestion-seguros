@@ -153,17 +153,62 @@ export async function deactivatePushDevice() {
   return errors;
 }
 
+// Un permiso "granted" y una promesa showNotification resuelta NO garantizan
+// que Windows muestre un banner. GetNotifications consulta la lista del navegador.
+async function findReadyWorker() {
+  if (!('serviceWorker' in navigator)) throw new Error('Este navegador no admite service workers.');
+  const existing = await navigator.serviceWorker.getRegistration('/');
+  if (!existing) throw new Error('No hay service worker registrado. Volvé a activar las notificaciones en este equipo.');
+  return Promise.race([
+    navigator.serviceWorker.ready,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('El service worker no se activó en 8 segundos. Recargá la página y probá de nuevo.')), 8000)),
+  ]);
+}
+
+export async function getLocalNotificationDiagnostics() {
+  const caps = getPushCapabilities();
+  const registration = caps.supported ? await navigator.serviceWorker.getRegistration('/') : null;
+  const active = !!registration?.active && registration.active.state === 'activated';
+  let notificationsCount = null;
+  if (registration && typeof registration.getNotifications === 'function') {
+    try { notificationsCount = (await registration.getNotifications()).length; }
+    catch { notificationsCount = null; }
+  }
+  return {
+    permission: caps.permission,
+    secure: caps.secure,
+    supported: caps.supported,
+    workerRegistered: !!registration,
+    workerActive: active,
+    notificationsCount,
+  };
+}
+
 export async function showLocalNotificationTest() {
   const c = getPushCapabilities();
+  if (!c.secure) throw new Error('Abrí el sitio HTTPS de Netlify.');
+  if (!c.supported) throw new Error('Este navegador no admite notificaciones web.');
   if (c.permission !== 'granted') throw new Error('Primero tenés que permitir las notificaciones.');
-  const registration = await navigator.serviceWorker.ready;
-  await registration.showNotification('Gestión Seguros · Prueba local', {
-    body: 'Este equipo puede mostrar avisos. Esta prueba no fue enviada por Firebase.',
-    icon: '/favicon.svg',
-    badge: '/favicon.svg',
-    tag: 'gestion-seguros-local-test',
+  const registration = await findReadyWorker();
+  if (!registration.active || registration.active.state !== 'activated') {
+    throw new Error('El service worker todavía no está activo. Recargá el sitio.');
+  }
+
+  // Tag único: dos pruebas sucesivas no se pisan ni reemplazan entre sí.
+  const tag = 'gestion-seguros-test-' + Date.now();
+  await registration.showNotification('Gestión Seguros · Aviso de prueba', {
+    body: 'Si ves este mensaje, Windows está mostrando notificaciones de la app.',
+    tag,
+    requireInteraction: true,
     data: { url: '/?section=alerts' },
   });
+  let queued = null;
+  if (typeof registration.getNotifications === 'function') {
+    try {
+      queued = (await registration.getNotifications({ tag })).some(n => n.tag === tag);
+    } catch { queued = null; }
+  }
+  return { queued, tag };
 }
 
 export async function getPushTestToken() {

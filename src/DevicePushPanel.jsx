@@ -8,6 +8,7 @@ import {
   restorePushDevice,
   deactivatePushDevice,
   showLocalNotificationTest,
+  getLocalNotificationDiagnostics,
   getPushTestToken,
   listenForegroundPush,
   pushErrorMessage,
@@ -20,6 +21,7 @@ export default function DevicePushPanel() {
   const [info, setInfo] = useState('');
   const [error, setError] = useState('');
   const [foreground, setForeground] = useState(null);
+  const [diagnostics, setDiagnostics] = useState(null);
   const enabled = !!device?.active && !!device?.registered && capabilities.permission === 'granted';
 
   useEffect(() => {
@@ -79,8 +81,30 @@ export default function DevicePushPanel() {
   async function testLocal() {
     clearFeedback(); setWorking('test');
     try {
-      await showLocalNotificationTest();
-      setInfo('Se mostró una notificación local de prueba. No se envió ninguna push desde Firebase.');
+      const result = await showLocalNotificationTest();
+      setDiagnostics(await getLocalNotificationDiagnostics());
+      if (result.queued === true) {
+        setInfo('El navegador creó el aviso de prueba y lo tiene registrado. Si no aparece una ventana emergente, revisá Windows > Sistema > Notificaciones (Chrome/Edge y No molestar), y el centro de notificaciones con Win + N. Esto no es todavía un envío desde Firebase.');
+      } else if (result.queued === false) {
+        setError('El navegador aceptó la solicitud, pero la prueba no figura entre sus avisos activos. Revisá permisos del sitio, notificaciones de Windows y No molestar.');
+      } else {
+        setInfo('Se solicitó el aviso local, pero este navegador no permite verificar que haya aparecido en pantalla. Revisá las notificaciones del sistema; esta prueba no usa Firebase.');
+      }
+    } catch (err) { setError(pushErrorMessage(err)); }
+    finally { setWorking(''); }
+  }
+
+  async function diagnose() {
+    clearFeedback(); setWorking('diagnose');
+    try {
+      const state = await getLocalNotificationDiagnostics();
+      setCapabilities(getPushCapabilities());
+      setDiagnostics(state);
+      if (!state.secure || !state.supported || state.permission !== 'granted' || !state.workerActive) {
+        setError('El diagnóstico detectó una configuración incompleta. Revisá el estado detallado abajo.');
+      } else {
+        setInfo('Permisos y service worker correctos. Si el banner no se ve, Windows o el navegador pueden estar ocultándolo. Revisá No molestar y Win + N.');
+      }
     } catch (err) { setError(pushErrorMessage(err)); }
     finally { setWorking(''); }
   }
@@ -141,7 +165,16 @@ export default function DevicePushPanel() {
       {enabled && <button className="btn btn-outline" type="button" disabled={!!working} onClick={refresh}><RefreshCw size={16}/> Sincronizar</button>}
       {enabled && <button className="btn btn-outline" type="button" disabled={!!working} onClick={testLocal}><Send size={16}/> Probar aviso local</button>}
       {enabled && <button className="btn btn-outline" type="button" disabled={!!working} onClick={copyToken}><Copy size={16}/> Copiar token de prueba</button>}
+      <button className="btn btn-outline" type="button" disabled={!!working} onClick={diagnose}><RefreshCw size={16}/> Diagnosticar notificaciones</button>
     </div>
+    {diagnostics && <div className="push-diagnostics" role="status">
+      <b>Diagnóstico de este dispositivo</b>
+      <div><span>Permiso del navegador</span><strong>{diagnostics.permission === 'granted' ? 'Permitido' : diagnostics.permission === 'denied' ? 'Bloqueado' : 'Sin conceder'}</strong></div>
+      <div><span>Conexión HTTPS</span><strong>{diagnostics.secure ? 'Correcta' : 'No segura'}</strong></div>
+      <div><span>Service worker</span><strong>{diagnostics.workerActive ? 'Activo' : diagnostics.workerRegistered ? 'Registrado, no activo' : 'Sin registrar'}</strong></div>
+      <div><span>Avisos activos en el navegador</span><strong>{diagnostics.notificationsCount === null ? 'No verificable' : String(diagnostics.notificationsCount)}</strong></div>
+      <p>Un aviso registrado no garantiza que Windows muestre un banner. Verificá Windows → Configuración → Sistema → Notificaciones → Google Chrome/Microsoft Edge y desactivá «No molestar»; también podés revisar Win + N.</p>
+    </div>}
     {foreground && <div className="push-feedback good"><BellRing size={17}/><span><b>{foreground.title}</b> — {foreground.body}</span></div>}
     <p className="push-disclaimer">El permiso se solicita únicamente al pulsar Activar. Cada dispositivo tiene su propio registro. Esta etapa sigue usando clientes ficticios guardados en el navegador. Las push pueden probarse desde Firebase Console con el token; los avisos automáticos de cuotas requieren migrar los datos a Firestore y configurar un emisor seguro del lado servidor.</p>
   </article>;
