@@ -1,18 +1,20 @@
 {
   "name": "gestion-seguros",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "build": "npm run check:push && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "check:push": "node --check netlify/lib/gestion-push.mjs && node --check netlify/functions/push-test.mjs && node --check netlify/functions/push-event.mjs && node --check netlify/functions/push-schedule.mjs && node --check netlify/functions/push-tick.mjs && node --check src/pushServerClient.js"
   },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "lucide-react": "^0.468.0",
-    "firebase": "^13.4.0"
+    "firebase": "^13.4.0",
+    "firebase-admin": "^13.6.0"
   },
   "devDependencies": {
     "vite": "^6.0.7",
