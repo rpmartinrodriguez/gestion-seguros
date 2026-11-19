@@ -70,12 +70,11 @@ export async function activeDevices(db, uid) {
   return snap.docs.filter(d => typeof d.data().token === 'string' && d.data().token.length >= 30)
     .map(d => ({ id: d.id, token: d.data().token, ref: d.ref }));
 }
-export async function sendPush(admin, uid, event, targetId = null) {
-  let devices = await activeDevices(admin.db, uid);
-  if (targetId) devices = devices.filter(x => x.id === targetId);
-  if (!devices.length) throw new PushError(409, 'No hay dispositivos registrados para esta cuenta. Ingresá con la misma cuenta en cada equipo y activá las push.', 'NO_DEVICES');
-  const tokens = [...new Set(devices.map(x => x.token))];
-  const msg = {
+async function deliverDevices(admin, devices, event) {
+  if (!devices.length) throw new PushError(409, 'Todavía no hay dispositivos autorizados y registrados. Ingresá con una cuenta aprobada y activá push en cada equipo.', 'NO_DEVICES');
+  const unique = [...new Map(devices.map(d => [d.token, d])).values()].slice(0, 200);
+  const tokens = unique.map(d => d.token);
+  const message = {
     tokens,
     data: {
       title: String(event.title || 'Gestión Seguros').slice(0, 80),
@@ -86,11 +85,11 @@ export async function sendPush(admin, uid, event, targetId = null) {
     },
     webpush: { headers: { Urgency: 'high' } },
   };
-  const sent = await admin.messaging.sendEachForMulticast(msg);
+  const sent = await admin.messaging.sendEachForMulticast(message);
   for (let i = 0; i < sent.responses.length; i++) {
     const code = sent.responses[i].error?.code;
     if (['messaging/registration-token-not-registered', 'messaging/invalid-registration-token'].includes(code)) {
-      await Promise.all(devices.filter(d => d.token === tokens[i]).map(d => d.ref.update({ enabled: false }).catch(() => {})));
+      await unique[i].ref.update({ enabled: false }).catch(() => {});
     }
   }
   if (!sent.successCount) {
@@ -99,6 +98,24 @@ export async function sendPush(admin, uid, event, targetId = null) {
   }
   return { sent: sent.successCount, failed: sent.failureCount, devices: tokens.length };
 }
+
+export async function sendPush(admin, uid, event, targetId = null) {
+  let devices = await activeDevices(admin.db, uid);
+  if (targetId) devices = devices.filter(d => d.id === targetId);
+  return deliverDevices(admin, devices, event);
+}
+
+// Las operaciones de la app envían a todos los correos incluidos en la
+// whitelist de Netlify. Cada cuenta activa sus propios dispositivos.
+// Sin acceso a personas ni datos privados: los mensajes son genéricos.
+export async function sendTeamPush(admin, event) {
+  const emails = allowedEmails().slice(0, 20);
+  const users = await Promise.all(emails.map(email => admin.auth.getUserByEmail(email).catch(() => null)));
+  const authorized = users.filter(user => user && !user.disabled);
+  const grouped = await Promise.all(authorized.map(user => activeDevices(admin.db, user.uid)));
+  return deliverDevices(admin, grouped.flat(), event);
+}
+
 export async function cooldown(db, name, waitMs) {
   const ref = db.doc('gestion_push_throttles/' + hash(name));
   await db.runTransaction(async transaction => {
@@ -108,7 +125,7 @@ export async function cooldown(db, name, waitMs) {
     transaction.set(ref, { at: Timestamp.now() });
   });
 }
-export async function dedupedSend(admin, uid, event) {
+export async function dedupedSend(admin, uid, event, { team = false } = {}) {
   const ref = admin.db.doc('gestion_push_deliveries/' + hash(uid + ':' + event.id));
   try { await ref.create({ uid, category: event.category, status: 'sending', createdAt: FieldValue.serverTimestamp() }); }
   catch (err) {
@@ -116,7 +133,7 @@ export async function dedupedSend(admin, uid, event) {
     throw err;
   }
   try {
-    const delivery = await sendPush(admin, uid, event);
+    const delivery = team ? await sendTeamPush(admin, event) : await sendPush(admin, uid, event);
     await ref.update({ status: 'sent', ...delivery, completedAt: FieldValue.serverTimestamp() });
     return { ...delivery, duplicate: false };
   } catch (err) {
