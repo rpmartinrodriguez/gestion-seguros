@@ -1,8 +1,37 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Demo: cada sesión autenticada puede registrar SOLAMENTE sus propios
+    // dispositivos. Estos registros se usan con Firebase Admin desde backend.
+    // La cartera real permanece bloqueada hasta implementar usuarios por agencia.
+    match /pushDevices/{uid}/devices/{deviceId} {
+      function isOwner() {
+        return request.auth != null && request.auth.uid == uid;
+      }
+      function validDevice() {
+        return request.resource.data.keys().hasOnly([
+          'token', 'enabled', 'label', 'platform', 'origin', 'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'token', 'enabled', 'label', 'platform', 'origin', 'updatedAt'
+        ])
+        && request.resource.data.token is string
+        && request.resource.data.token.size() > 20
+        && request.resource.data.token.size() <= 4096
+        && request.resource.data.enabled == true
+        && request.resource.data.label is string
+        && request.resource.data.label.size() <= 80
+        && request.resource.data.platform in ['ios-pwa', 'web']
+        && request.resource.data.origin is string
+        && request.resource.data.origin.size() <= 256
+        && request.resource.data.updatedAt == request.time
+        && deviceId.size() <= 100;
+      }
+      allow read, delete: if isOwner();
+      allow create, update: if isOwner() && validDevice();
+    }
     match /{document=**} {
-      allow read, write: if false; // Hasta implementar Auth y reglas por rol
+      allow read, write: if false;
     }
   }
 }
