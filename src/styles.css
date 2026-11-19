@@ -36,3 +36,27 @@
 .notification-pref small{font-weight:400;color:#8298a7;line-height:1.5}
 .settingspanel .muted{padding:0 0 18px;line-height:1.6}
 @media(max-width:750px){.alert-toolbar{align-items:stretch;padding:15px}.alert-toolbar label,.alert-toolbar select{width:100%}.alert-toolbar .btn{width:100%}.alertlist{padding:0 15px}.alertrow{gap:10px}.alertbadge{width:36px;height:36px}.alert-actions .btn{white-space:normal}.notification-pref-list{margin-top:10px}}
+
+
+/* Activación FCM por dispositivo */
+.push-settings{max-width:840px}
+.push-heading{display:flex;align-items:center;gap:13px;margin-bottom:20px}
+.push-heading h3{margin:0 0 7px}
+.push-heading p{color:#7d92a3;font-size:12px;line-height:1.6}
+.push-symbol{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;background:#e6f6f3;color:#119c8b;flex:none}
+.push-state{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;border:1px solid #dfe9ee;border-radius:10px}
+.push-state>span:first-child{display:flex;align-items:center;gap:10px;color:#284c60;font-size:13px}
+.push-state .tag{white-space:normal;text-align:center}
+.push-detail-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.push-detail-grid>div{background:#f7fafb;border:1px solid #edf1f4;border-radius:9px;padding:12px;min-width:0;display:flex;flex-direction:column;gap:6px}
+.push-detail-grid small{color:#8197a6;font-size:11px}
+.push-detail-grid b{font-size:12px;color:#365269;overflow-wrap:anywhere}
+.push-feedback{display:flex;align-items:flex-start;gap:9px;padding:13px 15px;border-radius:9px;font-size:12px;line-height:1.6;margin:12px 0}
+.push-feedback svg{flex:none;margin-top:1px}
+.push-feedback.warn{background:#fff8eb;color:#926522;border:1px solid #ffedcc}
+.push-feedback.error{background:#fff0ed;color:#aa493e;border:1px solid #f8d6ce}
+.push-feedback.good{background:#e9f7f0;color:#28765d;border:1px solid #caeddf}
+.push-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}
+.push-disclaimer{font-size:11px;color:#8398a7;line-height:1.75;margin-top:17px}
+@media(max-width:750px){.push-detail-grid{grid-template-columns:1fr 1fr}.push-state{align-items:flex-start;flex-direction:column}.push-actions .btn{white-space:normal;flex:1;min-width:140px}.push-settings{padding:18px}}
+@media(max-width:460px){.push-detail-grid{grid-template-columns:1fr 1fr}.push-detail-grid>div{padding:10px}.push-detail-grid b{font-size:11px}}
