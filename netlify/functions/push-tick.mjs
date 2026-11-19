@@ -5,7 +5,7 @@ import { service, todayArgentina, addDays, dedupedSend } from '../lib/gestion-pu
 export default async function handler() {
   const admin = service();
   const date = todayArgentina();
-  const allowed = String(process.env.GESTION_PUSH_ALLOWED_EMAILS || '').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);
+  const allowed = String(process.env.GESTION_PUSH_ALLOWED_EMAILS || 'admin@seg.com').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);
   if (!allowed.length) throw Error('Falta GESTION_PUSH_ALLOWED_EMAILS en Netlify');
   const snapshot = await admin.db.collection('gestion_push_schedules').where('enabled', '==', true).limit(100).get();
   let notified = 0;

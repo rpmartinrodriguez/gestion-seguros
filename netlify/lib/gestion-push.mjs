@@ -13,7 +13,7 @@ export class PushError extends Error {
   constructor(status, message, code = 'PUSH_ERROR') { super(message); this.status = status; this.code = code; }
 }
 function allowedEmails() {
-  return String(process.env.GESTION_PUSH_ALLOWED_EMAILS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean);
+  return String(process.env.GESTION_PUSH_ALLOWED_EMAILS || 'admin@seg.com').split(',').map(x => x.trim().toLowerCase()).filter(Boolean);
 }
 export function service() {
   const value = process.env.GESTION_FIREBASE_SERVICE_ACCOUNT_JSON;

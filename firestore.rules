@@ -6,7 +6,10 @@ service cloud.firestore {
     // La cartera real permanece bloqueada hasta implementar usuarios por agencia.
     match /pushDevices/{uid}/devices/{deviceId} {
       function isOwner() {
-        return request.auth != null && request.auth.uid == uid;
+        return request.auth != null
+          && request.auth.uid == uid
+          && request.auth.token.email == 'admin@seg.com'
+          && request.auth.token.firebase.sign_in_provider == 'password';
       }
       function validDevice() {
         return request.resource.data.keys().hasOnly([

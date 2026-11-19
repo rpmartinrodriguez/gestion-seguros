@@ -77,3 +77,39 @@
 .operator-login .btn{min-height:41px}
 .operator-auth .muted{padding:0 0 16px}
 @media(max-width:750px){.operator-login{grid-template-columns:1fr}.operator-login .btn{width:100%;white-space:normal}}
+
+
+/* Acceso seguro al panel. La clave se valida en Firebase y no se guarda en la app. */
+.login-shell{display:grid;grid-template-columns:minmax(340px,43%) minmax(0,1fr);min-height:100dvh;background:#f6f8fb}
+.login-art{background:linear-gradient(156deg,#0e2032 0%,#15536a 63%,#167d79 100%);padding:clamp(28px,5vw,76px);color:#fff;display:flex;flex-direction:column;justify-content:space-between;min-height:100dvh;position:relative;overflow:hidden}
+.login-art:after{content:'';width:440px;height:440px;border:1px solid #ffffff1b;border-radius:50%;position:absolute;right:-180px;top:20%;box-shadow:0 0 0 100px #ffffff05,0 0 0 210px #ffffff04;pointer-events:none}
+.login-art>div{position:relative;z-index:1}
+.login-big-icon{width:115px;height:115px;border:1px solid #ffffff40;border-radius:30px;background:#ffffff16;display:grid;place-items:center;color:#83fff0;align-self:flex-start}
+.login-kicker{font-size:12px;letter-spacing:2px;font-weight:900;color:#8ceee0}
+.login-art h1{font-size:clamp(30px,3.1vw,48px);line-height:1.18;letter-spacing:-1.5px;margin:18px 0 20px;max-width:580px}
+.login-art p{font-size:15px;line-height:1.75;color:#badadf;max-width:450px}
+.login-art small{font-size:12px;color:#aac9d0;position:relative;z-index:1}
+.login-main{min-width:0;display:flex;align-items:center;justify-content:center;padding:clamp(22px,5vw,72px)}
+.login-card{width:min(100%,460px)}
+.login-brand{display:flex;align-items:center;gap:12px;color:#18394e;font-weight:900;font-size:15px;letter-spacing:.5px;margin-bottom:65px}
+.login-brand svg{color:#0f9c8b}
+.login-brand b{color:#0f9c8b}
+.login-icon{display:grid;place-items:center;color:#148e86;background:#e7f8f4;width:53px;height:53px;border-radius:14px;margin-bottom:19px}
+.login-card h2{font-size:26px;letter-spacing:-.7px;color:#1c374b;margin-bottom:11px}
+.login-description{font-size:13px;line-height:1.7;color:#8296a5;margin-bottom:30px}
+.login-form{display:flex;flex-direction:column;gap:20px}
+.login-form label{display:flex;flex-direction:column;gap:8px;color:#39566b;font-size:12px;font-weight:800}
+.login-form input{width:100%;min-height:49px;padding:13px 15px;background:white;border:1px solid #d7e2e9;border-radius:10px;font-size:14px;outline:none;color:#1c3649}
+.login-form input:focus{border-color:#22aa9b;box-shadow:0 0 0 3px #1cc9ad18}
+.login-form input[readonly]{background:#f2f6f8;color:#536c7c;cursor:default}
+.login-pass{position:relative}
+.login-pass input{padding-right:50px}
+.login-eye{position:absolute;right:7px;top:6px;width:38px;height:38px;display:grid;place-items:center;border:0;background:transparent;border-radius:8px;color:#8195a5}
+.login-eye:hover{background:#f0f5f7;color:#187c7b}
+.login-submit{min-height:49px;font-size:13px;width:100%;margin-top:5px}
+.login-hint,.login-loading{font-size:11px;line-height:1.65;color:#8c9fab;margin-top:22px}
+.login-notice{position:fixed;bottom:15px;left:50%;transform:translateX(-50%);z-index:80;background:#144953;color:white;padding:12px 18px;border-radius:10px;box-shadow:0 9px 32px #08263c44;font-size:12px;max-width:calc(100vw - 36px)}
+.login-card>.textbutton{display:block;margin-top:16px}
+@media(max-width:1000px){.login-shell{grid-template-columns:minmax(300px,36%) minmax(0,1fr)}.login-art{padding:32px}.login-art h1{font-size:30px}}
+@media(max-width:750px){.login-shell{grid-template-columns:1fr}.login-art{min-height:155px;padding:22px 24px;justify-content:center}.login-big-icon,.login-art p,.login-art small{display:none}.login-art h1{font-size:21px;letter-spacing:-.3px;line-height:1.4;margin:8px 0 0}.login-kicker{font-size:10px}.login-main{align-items:flex-start;padding:28px 22px 55px}.login-brand{margin-bottom:34px}.login-card h2{font-size:23px}.login-description{margin-bottom:23px}}
+@media(max-width:420px){.login-art h1{font-size:18px}.login-main{padding:24px 17px 50px}.login-form{gap:16px}.login-card h2{font-size:22px}}

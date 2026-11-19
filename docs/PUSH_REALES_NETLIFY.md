@@ -18,10 +18,10 @@ La versión 0.3 agrega el mismo patrón utilizado en SII Pallets: **React + FCM 
 
 En https://console.firebase.google.com/project/gestion-seg/authentication/providers
 
-1. Habilitá **Correo electrónico/Contraseña** además del modo Anónimo ya habilitado.
-2. En la lista de Usuarios, creá **una cuenta real para la persona autorizada**, con su correo y una contraseña fuerte. No guardes ni compartas contraseñas por chat.
-3. En cada PC o celular de la agencia, ingresá con una cuenta incluida en la lista permitida de Netlify; pueden ser cuentas distintas de la misma agencia. Luego presioná Activar push en ese equipo.
-4. La demo de clientes/pólizas sigue local, abierta sin ingreso de usuario. No la uses para asegurados reales hasta completar seguridad de la cartera.
+1. Habilitá **Correo electrónico/Contraseña**. El acceso anónimo ya no se utiliza para el registro de dispositivos.
+2. En Usuarios, creá `admin@seg.com` con la contraseña que el propietario elija. No guardes contraseñas en GitHub, Netlify ni frontend; recomendamos una clave más robusta para producción.
+3. En cada PC o celular ingresá con `admin@seg.com`. Luego presioná Activar push en ese equipo; si ya estaba permitido el aviso de un registro anónimo anterior, se intenta reutilizar el permiso sin preguntarlo otra vez.
+4. La demo de clientes/pólizas sigue local pero ahora requiere login. No la uses para asegurados reales hasta completar seguridad de la cartera.
 
 ### 2. Firebase Admin — generar credencial de servidor (privada)
 
@@ -40,13 +40,13 @@ Su valor es **todo el contenido JSON del archivo** (no la ruta del archivo). No 
 
 ### 3. Netlify — cuenta autorizada
 
-Creá otra variable de entorno en Netlify:
+Podés definir otra variable de entorno en Netlify (opcional si solo usás `admin@seg.com`, que es el valor predeterminado del backend):
 
 ```text
 GESTION_PUSH_ALLOWED_EMAILS
 ```
 
-Su valor debe ser el mismo correo creado en Firebase Authentication; admite varios correos separados por coma (ejemplo ficticio: `agente@ejemplo.com,empleada@ejemplo.com`). Las credenciales y las contraseñas nunca forman parte de esta variable.
+Su valor debe incluir `admin@seg.com`. Si ya la creaste antes, reemplazá cualquier otro correo por `admin@seg.com` para esta etapa. Las contraseñas nunca forman parte de esa variable.
 
 Publicá nuevamente el deploy de `main`. La VAPID pública y las seis variables Web de Firebase **ya están incluidas** en el código con respaldo.
 
@@ -57,13 +57,13 @@ Publicá nuevamente el deploy de `main`. La VAPID pública y las seis variables 
 3. Configuración → Push por dispositivo: presionar Activar si todavía no quedó registrado con el UID de la cuenta. Aceptar permisos.
 4. Pulsar **Probar push real desde la app**. El servidor valida el ID Token del usuario y que el equipo pertenezca a su UID; envía un mensaje FCM real. No se usan notificaciones locales para esta prueba.
 5. Verificar el aviso con la pestaña en segundo plano. Si la pestaña está abierta, se muestra un aviso interno (toast); no se garantiza un banner del sistema cuando la app tiene foco.
-6. Registrar una operación ficticia en Caja o el pago de una cuota. La app solicita el envío del evento al servidor; otros equipos con **la misma cuenta** y push activa deberían recibirlo.
+6. Registrar una operación ficticia en Caja o el pago de una cuota. La app solicita el envío del evento al servidor; otros equipos del administrador con push activa deberían recibirlo.
 7. Pulsar **Sincronizar vencimientos demo** si se desea confirmar las fechas que la función programada revisará mañana.
 8. Para iPhone, instalar la PWA en pantalla de inicio y usarla desde el icono.
 
 ## Seguridad y limitaciones
 
-- **El backend exige Firebase Auth Email/Contraseña y la lista autorizada de correos**. Las cuentas anónimas solo pueden registrar sus propios tokens de demo, pero NO ejecutar el emisor.
+- **El backend exige Firebase Auth Email/Contraseña y autoriza `admin@seg.com` por defecto**; la lista opcional de Netlify tiene prioridad si existe. Las cuentas anónimas NO pueden registrar tokens ni ejecutar el emisor.
 - Los mensajes que llegan al sistema operativo usan textos genéricos, sin información sensible.
 - Netlify administra Firebase Admin; la clave privada nunca llega al navegador.
 - La emisión por operaciones funciona mientras una operadora autorizada usa la app y registra acciones locales ficticias. Se envía a todos los dispositivos cuyas cuentas están autorizadas por Netlify; la prueba individual llega solo al dispositivo que la inicia.
@@ -93,3 +93,7 @@ Publicá nuevamente el deploy de `main`. La VAPID pública y las seis variables 
 - `src/pushServerClient.js`: cola, API y sincronización de fechas.
 - `src/PushOperatorAuth.jsx`: ingreso de la operadora.
 - `src/DevicePushPanel.jsx`: activación y prueba desde la app.
+
+## Nuevo login de administrador
+
+Ver [LOGIN_ADMIN.md](LOGIN_ADMIN.md). No es necesario subir contraseñas al código; el administrador se crea una sola vez en Firebase Authentication. Después de estos cambios, volver a publicar `firestore.rules` desde Firebase Console.
