@@ -60,3 +60,12 @@
 .push-disclaimer{font-size:11px;color:#8398a7;line-height:1.75;margin-top:17px}
 @media(max-width:750px){.push-detail-grid{grid-template-columns:1fr 1fr}.push-state{align-items:flex-start;flex-direction:column}.push-actions .btn{white-space:normal;flex:1;min-width:140px}.push-settings{padding:18px}}
 @media(max-width:460px){.push-detail-grid{grid-template-columns:1fr 1fr}.push-detail-grid>div{padding:10px}.push-detail-grid b{font-size:11px}}
+
+
+/* Diagnóstico de avisos locales: estado comprobable vs. banner del sistema */
+.push-diagnostics{margin-top:16px;padding:16px 18px;border:1px solid #dce7ec;border-radius:11px;background:#f7fafb;display:grid;gap:10px;font-size:12px}
+.push-diagnostics>b{color:#294a5a;font-size:13px;margin-bottom:2px}
+.push-diagnostics>div{display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e9f0f3;padding-bottom:8px}
+.push-diagnostics>div span{color:#677e8e}
+.push-diagnostics>div strong{color:#284d5b;text-align:right}
+.push-diagnostics>p{font-size:11px;line-height:1.7;color:#708697;margin:3px 0 0}
