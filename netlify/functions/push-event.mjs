@@ -25,6 +25,6 @@ export default async function handler(request) {
     return dedupedSend(admin, admin.uid, {
       id: 'demo:' + kind + ':' + eventId,
       category: kind, title, body,
-    });
+    }, { team: true });
   });
 }
