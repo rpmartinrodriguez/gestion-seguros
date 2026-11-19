@@ -4,6 +4,7 @@ import './styles.css';
 import { makeAlerts } from './notificationRules.js';
 import { NotificationCenter, NotificationPreferences } from './Notifications.jsx';
 import DevicePushPanel from './DevicePushPanel.jsx';
+import { listenForegroundPush } from './devicePush.js';
 
 const K = 'gestion-seguros-demo-v1';
 const nowDate = () => new Date().toISOString().slice(0,10);
@@ -53,7 +54,25 @@ export default function App(){
   const [cashCount,setCashCount]=useState('');
   const [message,setMessage]=useState('');
   useEffect(()=>{localStorage.setItem(K,JSON.stringify(data))},[data]);
-  useEffect(()=>{if(!message)return;const id=setTimeout(()=>setMessage(''),4500);return()=>clearTimeout(id)},[message]);
+  useEffect(()=>{if(!message)return;const id=setTimeout(()=>setMessage(''),7000);return()=>clearTimeout(id)},[message]);
+  // La recepción de FCM debe permanecer activa en toda la aplicación, no solo
+  // mientras Configuración esté abierta. En primer plano se informa por toast.
+  // Las notificaciones nativas en segundo plano pertenecen al service worker.
+  useEffect(() => {
+    let cancelled = false;
+    let unsubscribe = () => {};
+    listenForegroundPush(payload => {
+      const title = String(payload?.notification?.title || payload?.data?.title || 'Nueva notificación').slice(0, 90);
+      const body = String(payload?.notification?.body || payload?.data?.body || 'Abrí Notificaciones para consultar el detalle.').slice(0, 150);
+      setMessage(title + ' · ' + body);
+    }).then(off => {
+      if (cancelled) off();
+      else unsubscribe = off;
+    }).catch(err => {
+      console.warn('[Gestión Seguros] No se pudo iniciar el receptor FCM en primer plano:', err?.code || err?.message);
+    });
+    return () => { cancelled = true; unsubscribe(); };
+  }, []);
   const update=(key,value)=>setForm(prev=>({...prev,[key]:value}));
   const clientById=(id)=>data.clients.find(c=>c.id===id);
   const policyById=(id)=>data.policies.find(p=>p.id===id);
