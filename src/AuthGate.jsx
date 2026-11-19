@@ -33,7 +33,7 @@ export default function AuthGate({ children }) {
 
   useEffect(() => {
     let disposed = false;
-    return onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (disposed) return;
       if (!user || user.isAnonymous || user.email?.trim().toLowerCase() !== ADMIN_EMAIL) {
         setOtherAccount(user && !user.isAnonymous ? user.email || 'otra cuenta' : '');
@@ -63,7 +63,8 @@ export default function AuthGate({ children }) {
         setStatus('login');
       }
     });
-    // cleanup: cuando cambia el componente raíz, cancelar los resultados tardíos.
+    // Al desmontar, cancelamos el listener y descartamos respuestas tardías.
+    return () => { disposed = true; unsubscribe(); };
   }, []);
 
   async function login(e) {
