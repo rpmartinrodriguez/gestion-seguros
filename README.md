@@ -1,20 +1,21 @@
-# Gestión Seguros — Versión 0.1 (demo)
+# Gestión Seguros — Versión 0.2 (demo + registro de push por dispositivo)
 
 Aplicación React + Vite para productoras de seguros, preparada para Netlify.
 
-**ATENCIÓN:** esta es una demostración con datos ficticios almacenados solo en el navegador usando `localStorage`. **No cargar datos reales**: aún no hay autenticación ni base de datos compartida, las push no están activas y no existe almacenamiento seguro para comprobantes.
+**ATENCIÓN:** la cartera, clientes, pólizas, cuotas y caja siguen siendo una **demostración local con datos ficticios almacenados en `localStorage`**. No cargar datos reales: todavía no existe un sistema de usuarios y roles para la gestión de asegurados ni almacenamiento seguro de comprobantes.
 
 ## Módulos
-- Panel de control, saldos y próximos vencimientos.
-- Caja diaria con movimientos de efectivo y transferencias, filtros, datos de comprobantes, CSV y cierre diario.
-- Clientes: altas, edición, filtro por nombre, DNI, patente y teléfono.
-- Pólizas: cobro en oficina o pago directo a la aseguradora, cuotas y estado.
-- Cobranza en oficina: ingreso en caja más rendición posterior a la compañía. Pago directo: actualización de cuota sin movimiento de caja.
-- Vencimientos: agenda y apertura de chat WhatsApp con mensaje precargado; apertura no es confirmación de envío.
-- Reportes y configuración.
+- Inicio con saldos, alertas y próximos vencimientos.
+- Caja diaria con efectivo, transferencias, datos de comprobantes, filtros y cierre.
+- Clientes con búsqueda por DNI, teléfono y patente.
+- Pólizas y cuotas con dos modalidades: cobro en oficina + rendición o pago directo a la compañía.
+- Vencimientos y apertura de WhatsApp con texto precargado; abrir el chat no confirma el envío.
+- Centro de notificaciones internas, informes y preferencias.
+- **Activación de notificaciones push FCM por dispositivo**: permisos desde un botón, registro con sesión de prueba de Firebase Auth, Firestore, service worker, prueba local, copia de token para prueba FCM y desactivación del dispositivo.
+
+**Importante:** tener el dispositivo registrado en Firebase no significa que se estén enviando recordatorios automáticos. La función programada para procesar vencimientos se agregará después de la migración segura de la cartera a Firestore.
 
 ## Arranque local
-
 ```bash
 npm install
 npm run dev
@@ -22,12 +23,18 @@ npm run dev
 
 ## Publicar en Netlify
 
-**GitHub:** `rpmartinrodriguez/gestion-seguros`. Importar desde Git en Netlify. Build command `npm run build`, publish directory `dist`, Node.js `22`. La configuración ya se encuentra en `netlify.toml`.
+Repositorio: `rpmartinrodriguez/gestion-seguros`. Seleccionar GitHub, rama `main`, build `npm run build`, publicación `dist`, Node 22. El archivo `netlify.toml` ya contiene las opciones de despliegue.
 
-## Próxima etapa Firebase
+## Configuración Firebase y push
 
-Conectar Firebase Auth, Firestore, Cloud Storage y FCM. Establecer reglas con permisos de administrador y operador, índices, funciones programadas para vencimientos y auditoría. No agregar contraseñas al código. Las variables de `.env.example` son solo placeholders: no conectan Firebase en esta demo. Las reglas iniciales de `firestore.rules` deniegan todo hasta construir la seguridad.
+El proyecto Web de Firebase es `gestion-seg`. Sus identificadores públicos ya están disponibles como valores predeterminados en `src/firebaseConfig.js`; se pueden reemplazar con `VITE_FIREBASE_*` en Netlify.
+
+Para habilitar la activación falta **la clave pública VAPID**, que debe cargarse en Netlify como `VITE_FIREBASE_VAPID_KEY`, más habilitar Firebase Authentication **Anónimo** (solo para la demo) y publicar las reglas restrictivas de `firestore.rules` en Firebase Console.
+
+**Instrucciones completas:** [docs/ACTIVAR_PUSH_FIREBASE.md](docs/ACTIVAR_PUSH_FIREBASE.md).
+
+Las reglas de Firestore solo admiten que cada usuario de demo guarde sus propios registros técnicos de tokens push. **No autorizan acceso a clientes o cartera.** Antes de usar datos reales, reemplazar sesiones anónimas por login de operadores, seguridad por agencia y almacenamiento seguro.
 
 ## Criterios contables
 
-Los cobros de primas para rendición no son ingresos propios de la agencia. Las transferencias informadas requieren validación; sin conciliación con aseguradoras, un pago registrado no certifica vigencia de cobertura. La demo no reemplaza un sistema de gestión aseguradora autorizado.
+Los cobros de primas pendientes de rendir no son ingresos propios de la agencia. Las transferencias informadas requieren validación; sin conciliación con aseguradoras, un pago registrado no certifica vigencia de cobertura. Esta demo no reemplaza un sistema habilitado de gestión aseguradora.
