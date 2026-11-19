@@ -34,3 +34,14 @@ Esta actualización modifica únicamente la interfaz (React JSX, CSS y viewport 
 12. **Datos**: no borrar caché/datos del navegador ni reinstalar PWA durante la prueba; eso podría eliminar datos ficticios locales.
 
 Una compilación exitosa de GitHub garantiza que se construye el frontend, pero **no equivale a una prueba real en iPhone/Android**. Si algún control se superpone en un modelo concreto, adjuntar una captura y el modelo/versión del dispositivo para corregir el detalle.
+
+
+## Ajustes posteriores de limpieza visual
+
+- En móvil, **no hay campanita ni hamburguesa en la cabecera**; toda la navegación está en la barra inferior, con Avisos y Más. La cabecera conserva el título y el avatar.
+- En el menú completo, **Vencimientos** muestra calendario y **Notificaciones** la campana.
+- Cada formulario separa campos (área desplazable) y acciones (pie fijo) dentro del modal. La capa del modal se ajusta al `visualViewport` para acompañar el teclado en iOS. No hay scroll de la página mientras se edita.
+- Configuración → Notificaciones solo muestra estado, **Activar notificaciones**, **Probar notificación** (push FCM real) y un enlace secundario para desactivar. Se ocultan token, diagnóstico, sincronización manual y prueba local, sin tocar el emisor remoto ni la sincronización de agenda.
+- Se aumenta contraste en tarjetas, textos secundarios, estados, bordes y separadores; también en cabecera y pie de los modales.
+
+**Regresión a probar:** crear/editar cliente, nueva póliza, registrar movimiento y cuota, cierre de caja; comprobar que Guardar / Cancelar permanecen visibles al recorrer campos y abrir teclado. Verificar envío FCM real desde Configuración en dispositivo ya registrado, sin volver a conceder permisos. Verificar que el aviso se ve al tocar Avisos en la barra inferior y que Más abre el menú.
