@@ -11,7 +11,7 @@ export const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:447212017074:web:9193f6874c5e26a42c00ab',
 };
 
-// La clave Web Push (VAPID) es pública, pero debe generarse en tu propio proyecto
-// Firebase console > Configuración del proyecto > Cloud Messaging.
-export const firebaseVapidKey = (import.meta.env.VITE_FIREBASE_VAPID_KEY || '').trim();
+// Clave PÚBLICA VAPID de Cloud Messaging; puede sobrescribirse desde Netlify.
+// Nunca agregar la clave VAPID privada al repositorio.
+export const firebaseVapidKey = (import.meta.env.VITE_FIREBASE_VAPID_KEY || 'BF9CAKj5CkISqjY1-R9b9NI9USeQUKY1nGmxSpTZhMZrd6S8p0kTqYYLw2wtRRRYHDqqw7UAp7PyirxbiqPoI70').trim();
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
