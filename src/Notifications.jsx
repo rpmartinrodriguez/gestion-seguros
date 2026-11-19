@@ -14,7 +14,7 @@ export function NotificationCenter({ alerts, seen = [], onSeen, onMarkAll, onNav
       <div><h2>Centro de notificaciones</h2><p>Alertas sobre cuotas, pagos, renovaciones y caja.</p></div>
       <button type="button" className="btn btn-outline" onClick={onSettings}>Preferencias</button>
     </div>
-    <div className="notebox"><BellRing size={20}/><span><b>Alertas internas de demostración.</b> Se calculan al abrir la app. Podés registrar este dispositivo para recibir push de Firebase desde Configuración. Los avisos automáticos de vencimientos se habilitarán al sincronizar la cartera con Firestore y configurar el emisor programado.</span></div>
+    <div className="notebox"><BellRing size={20}/><span><b>Alertas internas de demostración.</b> Se calculan al abrir la app. Las alertas de ejemplo permanecen en este navegador. Desde Configuración podés activar push reales por dispositivo, probar un envío desde Netlify y sincronizar fechas ficticias para recordatorios programados.</span></div>
     <div className="stats three">
       <div className="numbercard"><div className="numbertop"><span>Por atender</span><BellRing size={19}/></div><strong>{pending.length}</strong><small>Alertas no marcadas como vistas</small></div>
       <div className="numbercard"><div className="numbertop"><span>Cuotas</span><CalendarClock size={19}/></div><strong>{pending.filter(x => x.kind === 'due' || x.kind === 'overdue').length}</strong><small>Próximas o vencidas</small></div>
