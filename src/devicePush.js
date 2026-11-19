@@ -49,7 +49,7 @@ function deviceLabel() {
 export function pushErrorMessage(error) {
   const code = String(error?.code || '');
   const msg = String(error?.message || '');
-  if (code === 'auth/operation-not-allowed') return 'Habilitá el método de acceso Anónimo en Firebase Authentication para registrar los dispositivos de prueba.';
+  if (code === 'auth/operation-not-allowed') return 'Habilitá Correo/contraseña en Firebase Authentication e ingresá como administrador.';
   if (code === 'permission-denied' || code === 'firestore/permission-denied') return 'Firestore rechazó el registro. Publicá las reglas firestore.rules del repositorio desde la consola Firebase.';
   if (/messaging\/token-subscribe-failed|messaging\/permission-blocked/.test(code)) return 'No se pudo obtener el token de Firebase. Revisá la clave VAPID, el dominio autorizado y los permisos del navegador.';
   if (code === 'auth/network-request-failed') return 'No se pudo conectar con Firebase. Revisá la conexión a Internet.';
@@ -84,13 +84,16 @@ export async function activatePushDevice({ requestPermission = true } = {}) {
   });
   if (!token) throw new Error('Firebase no devolvió un token para este dispositivo.');
 
-  const [{ getAuth, signInAnonymously }, { getFirestore, doc, setDoc, serverTimestamp }] = await Promise.all([
+  const [{ getAuth }, { getFirestore, doc, setDoc, serverTimestamp }] = await Promise.all([
     import('firebase/auth'),
     import('firebase/firestore'),
   ]);
   const auth = getAuth(firebaseApp);
   await auth.authStateReady();
-  const user = auth.currentUser || (await signInAnonymously(auth)).user;
+  const user = auth.currentUser;
+  if (!user || user.isAnonymous || user.email?.toLowerCase() !== 'admin@seg.com') {
+    throw new Error('Ingresá como administrador para vincular las push a tu cuenta. Ya no se registran equipos anónimos.');
+  }
 
   const deviceId = getDeviceId();
   await setDoc(doc(getFirestore(firebaseApp), 'pushDevices', user.uid, 'devices', deviceId), {
