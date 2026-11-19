@@ -46,7 +46,7 @@ export default function PushOperatorAuth() {
   return <article className="panel settingspanel operator-auth">
     <h3>Cuenta de la productora · Push reales</h3>
     {user?.email && !user.isAnonymous ? <>
-      <p className="muted">Sesión activa: <b>{user.email}</b>. Todos los equipos que inicien sesión con esta cuenta y activen las push podrán recibir los mismos avisos.</p>
+      <p className="muted">Sesión activa: <b>{user.email}</b>. Todos los equipos de las cuentas habilitadas en Netlify que activen push podrán recibir los avisos de operaciones. La prueba individual llega solamente al dispositivo que la inicia.</p>
       <button type="button" className="btn btn-outline" onClick={logout} disabled={busy}>Cerrar sesión y desvincular este equipo</button>
     </> : <>
       <p className="muted">Para enviar push desde la aplicación, ingresá con una cuenta de Correo/contraseña creada en Firebase Authentication y autorizada mediante la variable GESTION_PUSH_ALLOWED_EMAILS de Netlify. La demostración de clientes sigue disponible sin iniciar sesión.</p>
