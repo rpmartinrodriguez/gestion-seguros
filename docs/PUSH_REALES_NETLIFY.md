@@ -66,7 +66,7 @@ Publicá nuevamente el deploy de `main`. La VAPID pública y las seis variables 
 - **El backend exige Firebase Auth Email/Contraseña y la lista autorizada de correos**. Las cuentas anónimas solo pueden registrar sus propios tokens de demo, pero NO ejecutar el emisor.
 - Los mensajes que llegan al sistema operativo usan textos genéricos, sin información sensible.
 - Netlify administra Firebase Admin; la clave privada nunca llega al navegador.
-- La emisión por operaciones funciona mientras una operadora autorizada usa la app y registra acciones locales ficticias.
+- La emisión por operaciones funciona mientras una operadora autorizada usa la app y registra acciones locales ficticias. Se envía a todos los dispositivos cuyas cuentas están autorizadas por Netlify; la prueba individual llega solo al dispositivo que la inicia.
 - **Los datos de clientes siguen en localStorage**. Un cliente creado en una PC no aparece en otra; las push no son sincronización de cartera. Para uso real se necesita migración a Firestore, reglas por agencia, backend con eventos verificados y auditoría.
 - El envío programado trabaja únicamente con fechas demo sincronizadas por la usuaria. Si se modifica la agenda en otro equipo, el último dispositivo que sincronice puede modificar el resumen; producción requiere una base compartida.
 - Cada usuario debe activar permisos en cada dispositivo. El permiso de Windows/Chrome y las políticas de notificaciones del sistema siguen determinando si se ve un banner.
