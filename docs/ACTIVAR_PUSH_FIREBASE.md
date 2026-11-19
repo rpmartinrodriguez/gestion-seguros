@@ -84,3 +84,19 @@ El service worker `public/firebase-messaging-sw.js` contiene únicamente configu
 - **Local funciona pero FCM no llega**: probar con el token del dispositivo desde Firebase Console y revisar clave VAPID, compatibilidad del navegador y API FCM Registration.
 
 Documentación oficial: https://firebase.google.com/docs/cloud-messaging/web/get-started y https://firebase.google.com/docs/cloud-messaging/web/receive-messages
+
+
+## Si pulsás «Probar aviso local» y no aparece nada en la PC
+
+La función `showNotification()` del navegador **no puede confirmar que el sistema operativo haya mostrado un banner**. Una promesa exitosa solo indica que la solicitud fue aceptada; el aviso puede estar en el centro de notificaciones o silenciado por Windows.
+
+1. En Configuración > Notificaciones push por dispositivo, pulsá **Diagnosticar notificaciones**. Revisá si se indica «Permiso permitido», «HTTPS correcta», «Service worker activo».
+2. Pulsá **Probar aviso local**. La aplicación crea un aviso con identificador único y comprueba, cuando el navegador lo soporta, si quedó registrado con `getNotifications()`. **Esto no garantiza visibilidad en pantalla**.
+3. En Windows 11: **Configuración > Sistema > Notificaciones**. Activar Notificaciones; desactivar **No molestar**; en la lista de aplicaciones permitir banners para Google Chrome / Microsoft Edge.
+4. Abrir el centro de notificaciones con **Win + N**. El aviso puede figurar ahí aunque no se haya mostrado un banner emergente.
+5. En Chrome: escribir `chrome://settings/content/notifications` y confirmar que el sitio real de Netlify figure entre los permitidos; si usás Edge, abrir `edge://settings/content/notifications`.
+6. Recargar la PWA o pestaña con Ctrl + Shift + R tras el nuevo deploy y volver a ejecutar la prueba. Si el service worker no está activo, desactivar y volver a activar el dispositivo para reinstalarlo; no borrar datos del navegador porque eso eliminaría los datos ficticios de prueba.
+7. Si el diagnóstico aparece correcto pero no hay aviso, probar primero con Chrome abierto y Windows sin No molestar. Si sigue fallando, revisar permisos de Windows para el navegador.
+8. **Prueba FCM real:** una vez confirmado el registro del dispositivo, copiar el token y desde Firebase Console enviar un mensaje de prueba con la app en segundo plano. La prueba local no verifica la entrega desde los servidores de Firebase.
+
+Referencias: https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/showNotification y https://support.microsoft.com/en-us/windows/experience/notifications-and-do-not-disturb-in-windows .
