@@ -1,6 +1,8 @@
-# Gestión Seguros — Versión 0.3 (demo + push reales desde la aplicación)
+# Gestión Seguros — Versión 0.4 (login admin + push reales)
 
 Aplicación React + Vite para productoras de seguros, preparada para Netlify.
+
+**Login obligatorio:** usuario `admin@seg.com`, contraseña validada exclusivamente en Firebase Authentication. No se guarda ningún password en el repositorio. Crear la cuenta desde Firebase Console antes de entrar a la app: [docs/LOGIN_ADMIN.md](docs/LOGIN_ADMIN.md).
 
 **ATENCIÓN:** la cartera, clientes, pólizas, cuotas y caja siguen siendo una **demostración local con datos ficticios almacenados en `localStorage`**. No cargar datos reales: todavía no existe un sistema de usuarios y roles para la gestión de asegurados ni almacenamiento seguro de comprobantes.
 
@@ -29,7 +31,7 @@ Repositorio: `rpmartinrodriguez/gestion-seguros`. Seleccionar GitHub, rama `main
 
 El proyecto Web de Firebase es `gestion-seg`. Sus identificadores públicos ya están disponibles como valores predeterminados en `src/firebaseConfig.js`; se pueden reemplazar con `VITE_FIREBASE_*` en Netlify.
 
-La **clave pública VAPID** está configurada en el código. Para activar push reales desde la app, crear una cuenta Correo/contraseña en Firebase Authentication; en Netlify configurar `GESTION_FIREBASE_SERVICE_ACCOUNT_JSON` (clave privada solo servidor) y `GESTION_PUSH_ALLOWED_EMAILS` (correo autorizado). Para pruebas locales anónimas sin envío remoto siguen disponibles las reglas actuales y Authentication anónimo.
+La **clave pública VAPID** está configurada en el código. Para activar push reales desde la app, crear la cuenta `admin@seg.com` con Correo/contraseña en Firebase Authentication y configurar en Netlify `GESTION_FIREBASE_SERVICE_ACCOUNT_JSON` (clave privada solo servidor). La lista `GESTION_PUSH_ALLOWED_EMAILS` es opcional para el administrador predeterminado, pero si existe debe incluirlo. Las nuevas reglas Firestore limitan el registro de dispositivos al administrador con Correo/Contraseña; deben volverse a publicar en Firebase Console.
 
 **Configuración para push reales:** [docs/PUSH_REALES_NETLIFY.md](docs/PUSH_REALES_NETLIFY.md). Detalles de registro local de dispositivos: [docs/ACTIVAR_PUSH_FIREBASE.md](docs/ACTIVAR_PUSH_FIREBASE.md).
 
