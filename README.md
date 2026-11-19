@@ -1,4 +1,4 @@
-# Gestión Seguros — Versión 0.2 (demo + registro de push por dispositivo)
+# Gestión Seguros — Versión 0.3 (demo + push reales desde la aplicación)
 
 Aplicación React + Vite para productoras de seguros, preparada para Netlify.
 
@@ -13,7 +13,7 @@ Aplicación React + Vite para productoras de seguros, preparada para Netlify.
 - Centro de notificaciones internas, informes y preferencias.
 - **Activación de notificaciones push FCM por dispositivo**: permisos desde un botón, registro con sesión de prueba de Firebase Auth, Firestore, service worker, prueba local, copia de token para prueba FCM y desactivación del dispositivo.
 
-**Importante:** tener el dispositivo registrado en Firebase no significa que se estén enviando recordatorios automáticos. La función programada para procesar vencimientos se agregará después de la migración segura de la cartera a Firestore.
+**Envío desde la app:** funciones de Netlify envían push reales con Firebase Admin al registrar operaciones ficticias, permiten probar FCM desde la misma app y hacen una revisión diaria de fechas de vencimiento demo a las 09:00 de Argentina. Para habilitarlas hacen falta una credencial privada Admin en Netlify, un correo autorizado y la cuenta creada en Firebase Auth; consultar la guía. La cartera de clientes reales todavía NO está sincronizada.
 
 ## Arranque local
 ```bash
@@ -29,9 +29,9 @@ Repositorio: `rpmartinrodriguez/gestion-seguros`. Seleccionar GitHub, rama `main
 
 El proyecto Web de Firebase es `gestion-seg`. Sus identificadores públicos ya están disponibles como valores predeterminados en `src/firebaseConfig.js`; se pueden reemplazar con `VITE_FIREBASE_*` en Netlify.
 
-Para habilitar la activación falta **la clave pública VAPID**, que debe cargarse en Netlify como `VITE_FIREBASE_VAPID_KEY`, más habilitar Firebase Authentication **Anónimo** (solo para la demo) y publicar las reglas restrictivas de `firestore.rules` en Firebase Console.
+La **clave pública VAPID** está configurada en el código. Para activar push reales desde la app, crear una cuenta Correo/contraseña en Firebase Authentication; en Netlify configurar `GESTION_FIREBASE_SERVICE_ACCOUNT_JSON` (clave privada solo servidor) y `GESTION_PUSH_ALLOWED_EMAILS` (correo autorizado). Para pruebas locales anónimas sin envío remoto siguen disponibles las reglas actuales y Authentication anónimo.
 
-**Instrucciones completas:** [docs/ACTIVAR_PUSH_FIREBASE.md](docs/ACTIVAR_PUSH_FIREBASE.md).
+**Configuración para push reales:** [docs/PUSH_REALES_NETLIFY.md](docs/PUSH_REALES_NETLIFY.md). Detalles de registro local de dispositivos: [docs/ACTIVAR_PUSH_FIREBASE.md](docs/ACTIVAR_PUSH_FIREBASE.md).
 
 Las reglas de Firestore solo admiten que cada usuario de demo guarde sus propios registros técnicos de tokens push. **No autorizan acceso a clientes o cartera.** Antes de usar datos reales, reemplazar sesiones anónimas por login de operadores, seguridad por agencia y almacenamiento seguro.
 

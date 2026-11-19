@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { BellRing, CheckCircle2, CircleAlert, Copy, Smartphone, Monitor, Send, BellOff, RefreshCw } from 'lucide-react';
-import { firebaseConfig } from './firebaseConfig.js';
+import { firebaseApp, firebaseConfig } from './firebaseConfig.js';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { sendRealPushTest, syncDemoDueSchedule } from './pushServerClient.js';
 import {
   getPushCapabilities,
   getSavedPushDevice,
@@ -13,14 +15,23 @@ import {
   pushErrorMessage,
 } from './devicePush.js';
 
-export default function DevicePushPanel() {
+export default function DevicePushPanel({ demoData }) {
   const [device, setDevice] = useState(() => getSavedPushDevice());
   const [capabilities, setCapabilities] = useState(() => getPushCapabilities());
   const [working, setWorking] = useState('');
   const [info, setInfo] = useState('');
   const [error, setError] = useState('');
   const [diagnostics, setDiagnostics] = useState(null);
-  const enabled = !!device?.active && !!device?.registered && capabilities.permission === 'granted';
+  const [account, setAccount] = useState(null);
+  const [sessionReady, setSessionReady] = useState(false);
+  useEffect(() => onAuthStateChanged(getAuth(firebaseApp), user => {
+    setAccount(user);
+    setSessionReady(true);
+    setDevice(getSavedPushDevice());
+  }), []);
+  const enabled = !!device?.active && !!device?.registered && capabilities.permission === 'granted' &&
+    (!sessionReady || device?.uid === account?.uid);
+  const canSend = enabled && Boolean(account?.email && !account?.isAnonymous);
 
   useEffect(() => {
     let alive = true;
@@ -92,6 +103,26 @@ export default function DevicePushPanel() {
     finally { setWorking(''); }
   }
 
+  async function testReal() {
+    clearFeedback(); setWorking('real-test');
+    try {
+      const response = await sendRealPushTest(device.deviceId);
+      setInfo('Firebase aceptó ' + response.sent + ' envío(s) push real(es) para este equipo. Si la app está abierta aparecerá un aviso interno; si está en segundo plano, comprobá las notificaciones de Windows o del celular.');
+    } catch (err) {
+      setError('Push real: ' + (err.message || 'No se pudo enviar') +
+        (err.code ? ' (' + err.code + ')' : ''));
+    } finally { setWorking(''); }
+  }
+
+  async function syncAgenda() {
+    clearFeedback(); setWorking('schedule');
+    try {
+      const response = await syncDemoDueSchedule(demoData, { force: true });
+      setInfo('Agenda de demostración sincronizada: ' + response.dues + ' fechas de cuotas y ' + response.renewals + ' vencimientos de pólizas. Netlify hará la revisión programada.');
+    } catch (err) { setError(err.message || 'No se pudo sincronizar la agenda.'); }
+    finally { setWorking(''); }
+  }
+
   async function copyToken() {
     clearFeedback(); setWorking('token');
     try {
@@ -137,6 +168,7 @@ export default function DevicePushPanel() {
       <div><small>Servicio</small><b>Firebase · {firebaseConfig.projectId}</b></div>
       <div><small>Clave Web Push</small><b>{capabilities.vapidConfigured ? 'Configurada' : 'Pendiente'}</b></div>
       <div><small>Registro remoto</small><b>{enabled ? 'Activo' : 'Sin confirmar'}</b></div>
+      <div><small>Cuenta operadora</small><b>{canSend ? account.email : account?.isAnonymous ? 'Anónima de demo' : 'Sin cuenta vinculada'}</b></div>
     </div>
     {reason && <div className="push-feedback warn"><CircleAlert size={17}/><span>{reason}</span></div>}
     {!!error && <div className="push-feedback error" role="alert"><CircleAlert size={17}/><span>{error}</span></div>}
@@ -146,6 +178,8 @@ export default function DevicePushPanel() {
         ? <button className="btn" type="button" disabled={!!working || blocked} onClick={activate}><BellRing size={16}/> {working === 'activate' ? 'Activando…' : 'Activar en este dispositivo'}</button>
         : <button className="btn btn-outline" type="button" disabled={!!working} onClick={deactivate}><BellOff size={16}/> {working === 'deactivate' ? 'Desactivando…' : 'Desactivar dispositivo'}</button>}
       {enabled && <button className="btn btn-outline" type="button" disabled={!!working} onClick={refresh}><RefreshCw size={16}/> Sincronizar</button>}
+      {canSend && <button className="btn" type="button" disabled={!!working} onClick={testReal}><Send size={16}/> {working === 'real-test' ? 'Enviando…' : 'Probar push real desde la app'}</button>}
+      {canSend && <button className="btn btn-outline" type="button" disabled={!!working} onClick={syncAgenda}><RefreshCw size={16}/> Sincronizar vencimientos demo</button>}
       {enabled && <button className="btn btn-outline" type="button" disabled={!!working} onClick={testLocal}><Send size={16}/> Probar aviso local</button>}
       {enabled && <button className="btn btn-outline" type="button" disabled={!!working} onClick={copyToken}><Copy size={16}/> Copiar token de prueba</button>}
       <button className="btn btn-outline" type="button" disabled={!!working} onClick={diagnose}><RefreshCw size={16}/> Diagnosticar notificaciones</button>
@@ -158,6 +192,6 @@ export default function DevicePushPanel() {
       <div><span>Avisos activos en el navegador</span><strong>{diagnostics.notificationsCount === null ? 'No verificable' : String(diagnostics.notificationsCount)}</strong></div>
       <p>Un aviso registrado no garantiza que Windows muestre un banner. Verificá Windows → Configuración → Sistema → Notificaciones → Google Chrome/Microsoft Edge y desactivá «No molestar»; también podés revisar Win + N.</p>
     </div>}
-    <p className="push-disclaimer">El permiso se solicita únicamente al pulsar Activar. Cada dispositivo tiene su propio registro. Esta etapa sigue usando clientes ficticios guardados en el navegador. Las push pueden probarse desde Firebase Console con el token; los avisos automáticos de cuotas requieren migrar los datos a Firestore y configurar un emisor seguro del lado servidor.</p>
+    <p className="push-disclaimer">El permiso se solicita solo al pulsar Activar. Las push reales se envían desde funciones privadas de Netlify con Firebase Admin, una cuenta de operadora autorizada y la credencial segura de Netlify. No hace falta usar Firebase Console para probar el envío. Los clientes ficticios permanecen en el navegador; solo sus fechas de vencimiento se sincronizan para los avisos programados de la demo. El cierre definitivo de operaciones reales requerirá migrar la cartera a Firestore.</p>
   </article>;
 }

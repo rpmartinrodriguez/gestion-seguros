@@ -1,4 +1,4 @@
-# Activación de notificaciones push — Firebase `gestion-seg`
+> **Actualización versión 0.3:** las pruebas push reales y el envío por operaciones ya se realizan desde la aplicación mediante funciones de Netlify. La guía actualizada está en [PUSH_REALES_NETLIFY.md](PUSH_REALES_NETLIFY.md). Los pasos manuales de Firebase Console que figuran abajo son diagnósticos alternativos, no el flujo normal.\n\n# Activación de notificaciones push — Firebase `gestion-seg`
 
 Esta etapa conecta la **configuración Web de Firebase** que proporcionó el propietario y permite **activar, registrar, probar localmente y desactivar por dispositivo**. La aplicación continúa en **modo demostración**: clientes, pólizas, cuotas y movimientos permanecen en `localStorage` con datos ficticios. No subir datos reales.
 

@@ -69,3 +69,11 @@
 .push-diagnostics>div span{color:#677e8e}
 .push-diagnostics>div strong{color:#284d5b;text-align:right}
 .push-diagnostics>p{font-size:11px;line-height:1.7;color:#708697;margin:3px 0 0}
+
+/* Cuenta autorizada: mismo acceso Firebase en todos los dispositivos */
+.operator-login{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:10px;align-items:end}
+.operator-login label{font-size:11px;font-weight:800;color:#526c7f;display:flex;flex-direction:column;gap:8px}
+.operator-login input{border:1px solid #dce6ed;border-radius:9px;padding:10px 11px;min-width:0;background:#fff}
+.operator-login .btn{min-height:41px}
+.operator-auth .muted{padding:0 0 16px}
+@media(max-width:750px){.operator-login{grid-template-columns:1fr}.operator-login .btn{width:100%;white-space:normal}}
