@@ -7,7 +7,7 @@ La versión 0.3 agrega el mismo patrón utilizado en SII Pallets: **React + FCM 
 - `Configuración → Cuenta de la productora`: iniciar sesión con Firebase Email/Contraseña.
 - `Configuración → Push por dispositivo`: activar permisos y guardar token del equipo; un mismo usuario puede activar PC, Android e iPhone PWA.
 - `Probar push real desde la app`: ejecuta `/.netlify/functions/push-test` y Firebase Admin envía un mensaje al dispositivo actual; no hace falta entrar a la consola para enviar la prueba.
-- Alta de clientes, nuevas pólizas, movimientos de caja, pagos, confirmaciones, rendiciones y cierres envían aviso FCM a **los dispositivos del mismo UID autenticado**, mediante `push-event`. Si otro equipo usa otra cuenta, no recibe el evento; la vinculación multiusuario requiere gestión por agencia y roles.
+- Alta de clientes, nuevas pólizas, movimientos de caja, pagos, confirmaciones, rendiciones y cierres envían aviso FCM a **todos los dispositivos con cuentas autorizadas en `GESTION_PUSH_ALLOWED_EMAILS`**, mediante `push-event`. Cada persona puede usar su propia cuenta y cada dispositivo su token; las pruebas individuales solo llegan al dispositivo que las inicia.
 - Las fechas ficticias de cuotas y pólizas se sincronizan automáticamente desde el navegador al documento `gestion_push_schedules/{uid}`, sin nombres, DNI, patente, teléfono ni importes.
 - `push-tick` revisa esa agenda **todos los días a las 12:00 UTC (09:00 Argentina)**. Envía un resumen genérico al mismo UID, con deduplicación diaria, incluso con la aplicación cerrada.
 - Las notificaciones con la pestaña enfocada se muestran dentro de la app; cuando está en segundo plano, interviene el Service Worker y las notificaciones del sistema.
@@ -20,7 +20,7 @@ En https://console.firebase.google.com/project/gestion-seg/authentication/provid
 
 1. Habilitá **Correo electrónico/Contraseña** además del modo Anónimo ya habilitado.
 2. En la lista de Usuarios, creá **una cuenta real para la persona autorizada**, con su correo y una contraseña fuerte. No guardes ni compartas contraseñas por chat.
-3. En cada PC o celular de la agencia, entrá con **esa misma cuenta** en Configuración para asociar los dispositivos al mismo UID; luego presioná Activar push en ese equipo.
+3. En cada PC o celular de la agencia, ingresá con una cuenta incluida en la lista permitida de Netlify; pueden ser cuentas distintas de la misma agencia. Luego presioná Activar push en ese equipo.
 4. La demo de clientes/pólizas sigue local, abierta sin ingreso de usuario. No la uses para asegurados reales hasta completar seguridad de la cartera.
 
 ### 2. Firebase Admin — generar credencial de servidor (privada)
