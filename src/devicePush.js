@@ -117,7 +117,7 @@ export async function activatePushDevice({ requestPermission = true } = {}) {
 
 export async function restorePushDevice() {
   const saved = getSavedPushDevice();
-  if (!saved?.active || Notification?.permission !== 'granted') return saved;
+  if (!saved?.active || typeof Notification === 'undefined' || Notification.permission !== 'granted') return saved;
   if (Date.now() - (saved.lastSync || 0) < REFRESH_MS) return saved;
   return (await activatePushDevice({ requestPermission: false })).device;
 }
