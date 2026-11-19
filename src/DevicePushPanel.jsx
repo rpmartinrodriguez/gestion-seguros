@@ -10,7 +10,6 @@ import {
   showLocalNotificationTest,
   getLocalNotificationDiagnostics,
   getPushTestToken,
-  listenForegroundPush,
   pushErrorMessage,
 } from './devicePush.js';
 
@@ -20,7 +19,6 @@ export default function DevicePushPanel() {
   const [working, setWorking] = useState('');
   const [info, setInfo] = useState('');
   const [error, setError] = useState('');
-  const [foreground, setForeground] = useState(null);
   const [diagnostics, setDiagnostics] = useState(null);
   const enabled = !!device?.active && !!device?.registered && capabilities.permission === 'granted';
 
@@ -36,21 +34,6 @@ export default function DevicePushPanel() {
     // Una sola comprobación en el montaje. No se solicitan permisos automáticamente.
   }, []);
 
-  useEffect(() => {
-    if (!enabled) return undefined;
-    let stop = () => {};
-    let cancelled = false;
-    listenForegroundPush(payload => {
-      setForeground({
-        title: payload.notification?.title || payload.data?.title || 'Nuevo aviso de Gestión Seguros',
-        body: payload.notification?.body || payload.data?.body || 'Abrí el centro de notificaciones para consultar el detalle.',
-      });
-    }).then(unsubscribe => {
-      if (cancelled) unsubscribe();
-      else stop = unsubscribe;
-    }).catch(() => {});
-    return () => { cancelled = true; stop(); };
-  }, [enabled]);
 
   function clearFeedback() { setInfo(''); setError(''); }
 
@@ -175,7 +158,6 @@ export default function DevicePushPanel() {
       <div><span>Avisos activos en el navegador</span><strong>{diagnostics.notificationsCount === null ? 'No verificable' : String(diagnostics.notificationsCount)}</strong></div>
       <p>Un aviso registrado no garantiza que Windows muestre un banner. Verificá Windows → Configuración → Sistema → Notificaciones → Google Chrome/Microsoft Edge y desactivá «No molestar»; también podés revisar Win + N.</p>
     </div>}
-    {foreground && <div className="push-feedback good"><BellRing size={17}/><span><b>{foreground.title}</b> — {foreground.body}</span></div>}
     <p className="push-disclaimer">El permiso se solicita únicamente al pulsar Activar. Cada dispositivo tiene su propio registro. Esta etapa sigue usando clientes ficticios guardados en el navegador. Las push pueden probarse desde Firebase Console con el token; los avisos automáticos de cuotas requieren migrar los datos a Firestore y configurar un emisor seguro del lado servidor.</p>
   </article>;
 }
