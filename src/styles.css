@@ -113,3 +113,183 @@
 @media(max-width:1000px){.login-shell{grid-template-columns:minmax(300px,36%) minmax(0,1fr)}.login-art{padding:32px}.login-art h1{font-size:30px}}
 @media(max-width:750px){.login-shell{grid-template-columns:1fr}.login-art{min-height:155px;padding:22px 24px;justify-content:center}.login-big-icon,.login-art p,.login-art small{display:none}.login-art h1{font-size:21px;letter-spacing:-.3px;line-height:1.4;margin:8px 0 0}.login-kicker{font-size:10px}.login-main{align-items:flex-start;padding:28px 22px 55px}.login-brand{margin-bottom:34px}.login-card h2{font-size:23px}.login-description{margin-bottom:23px}}
 @media(max-width:420px){.login-art h1{font-size:18px}.login-main{padding:24px 17px 50px}.login-form{gap:16px}.login-card h2{font-size:22px}}
+
+
+/* ================================================================
+   Gestión Seguros · PWA móvil, sin alterar push / Firebase / datos
+   ================================================================ */
+html,body,#root{width:100%;min-width:0}
+html{-webkit-text-size-adjust:100%;overflow-x:clip}
+body{overflow-x:clip}
+button,input,select,textarea{-webkit-tap-highlight-color:transparent}
+.main,.content,.panel,.columns,.rowflex,.sectionbar{min-width:0}
+.mobile-bottom-nav,.mobile-drawer-close{display:none}
+
+@media(max-width:750px){
+  /* La PWA utiliza el viewport real, incluidos los márgenes de iOS. */
+  html,body,#root{min-height:100%;max-width:100%}
+  body{background:#f6f8fb}
+  .shell{min-height:100dvh;display:block;width:100%;max-width:100%;overflow-x:clip}
+  .main{width:100%;min-width:0;padding-top:env(safe-area-inset-top,0px)}
+  .topbar{height:64px;padding:0 13px;position:sticky;top:0;z-index:9;gap:8px;background:#fff}
+  .top-left,.top-right{gap:9px;min-width:0}
+  .top-left>div{min-width:0}
+  .top-left small{font-size:10px;margin-bottom:3px}
+  .topbar h1{font-size:16px;line-height:1.25;max-width:min(46vw,240px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar .iconbtn{flex:none;width:40px;height:40px}
+  .topbar .avatar{flex:none}
+  .content{width:100%;max-width:100%;padding:16px 12px calc(100px + env(safe-area-inset-bottom,0px));margin:0 auto}
+  .sidebar{width:min(300px,86vw);height:100dvh;max-height:100dvh;top:0;left:0;bottom:0;z-index:51;overflow-y:auto;overscroll-behavior:contain;padding:calc(16px + env(safe-area-inset-top,0px)) 12px calc(18px + env(safe-area-inset-bottom,0px))}
+  .sidebar .brand{padding:6px 46px 24px 10px}
+  .sidebar nav{flex:0 0 auto;padding-bottom:18px}
+  .sidebarfoot{margin-top:auto}
+  .mobile-drawer-close{display:grid;place-items:center;position:absolute;right:11px;top:calc(16px + env(safe-area-inset-top,0px));width:40px;height:40px;border-radius:11px;border:1px solid #ffffff24;background:#ffffff15;color:#fff}
+  .mobile-shade{z-index:50;background:#081b2bc2}
+  .mobile-bottom-nav{display:grid;position:fixed;left:0;right:0;bottom:0;width:100%;grid-template-columns:repeat(5,minmax(0,1fr));align-items:stretch;z-index:35;background:#fff;border-top:1px solid #e1e9ee;box-shadow:0 -6px 25px #142b3e11;padding:6px max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}
+  .mobile-nav-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:54px;min-width:0;padding:5px 2px;background:transparent;border:0;border-radius:10px;color:#8c9ca9;font-size:10px;font-weight:800;white-space:nowrap;position:relative}
+  .mobile-nav-button svg{flex:none}
+  .mobile-nav-button.active{background:#e6f7f3;color:#088a79}
+  .mobile-nav-icon{position:relative;display:grid;place-items:center}
+  .mobile-nav-icon i{position:absolute;top:-8px;right:-11px;min-width:16px;height:16px;border-radius:99px;background:#d9564d;color:white;font-size:9px;font-style:normal;display:grid;place-items:center;padding:0 3px;border:1px solid white}
+  .mobile-nav-button:focus-visible,.menu-toggle:focus-visible,.mobile-drawer-close:focus-visible{outline:2px solid #0cad98;outline-offset:2px}
+  .hero{min-height:0;padding:20px 17px;border-radius:14px;align-items:flex-start}
+  .hero h2{font-size:20px;line-height:1.3}
+  .hero p{font-size:12px;line-height:1.65}
+  .heroactions{gap:9px;margin-top:17px;flex-wrap:wrap}
+  .heroactions .btn{min-height:44px;white-space:normal;line-height:1.4;flex:1 1 135px}
+  .stats,.stats.three{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+  .stats.three>.numbercard:last-child:nth-child(odd){grid-column:1/-1}
+  .numbercard{min-width:0;padding:14px 12px;gap:9px;border-radius:11px}
+  .numbertop{gap:6px;align-items:flex-start;font-size:11px;line-height:1.35;min-width:0}
+  .numbertop>span{min-width:0;overflow-wrap:anywhere}
+  .numbertop svg{width:17px;height:17px;flex:none}
+  .numbercard strong{font-size:clamp(17px,4.25vw,22px);line-height:1.2;letter-spacing:-.5px;min-width:0;overflow-wrap:anywhere;word-break:normal}
+  .numbercard small{font-size:10px;line-height:1.45}
+  .columns{grid-template-columns:minmax(0,1fr);gap:12px}
+  .panel{border-radius:13px;margin:12px 0;min-width:0}
+  .panelhead{gap:10px;flex-wrap:wrap;align-items:flex-start;padding:15px 14px}
+  .panelhead h3{font-size:14px;overflow-wrap:anywhere}
+  .panelhead .btn{white-space:normal;min-height:40px}
+  .sectionbar{gap:12px;margin-bottom:15px}
+  .sectionbar h2{font-size:18px}
+  .sectionbar p{line-height:1.5;font-size:12px}
+  .sectionbar>.btn,.sectionbar>.monthlabel{width:100%;min-height:44px}
+  .sectionbar .buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .sectionbar .buttons .btn{white-space:normal;min-height:44px;line-height:1.3}
+  .monthlabel input{flex:1;min-width:0}
+  .list{padding:0 12px}
+  .listrow{gap:10px;padding:14px 2px}
+  .listrow>.tag{font-size:9px;max-width:85px;text-overflow:ellipsis;overflow:hidden}
+  .listrow>strong{font-size:11px;overflow-wrap:anywhere;text-align:right;max-width:34%}
+  .filters{padding:13px 12px;gap:10px}
+  .filters>.seg{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}
+  .filters>.seg::-webkit-scrollbar{display:none}
+  .seg{flex-shrink:0}
+  .seg button{min-height:36px;padding:7px 11px}
+  .filters>.searchbox,.filters>.searchbox.wide{flex:1 1 100%;width:100%;min-width:0;max-width:100%}
+  .filters>input,.filters>select{flex:1 1 130px;min-width:0;max-width:100%;min-height:43px}
+  .filters input,.filters select,.monthlabel input{font-size:16px}
+  .searchbox input{font-size:16px;min-height:44px}
+  .tag{max-width:100%;font-size:10px}
+  .notebox{align-items:flex-start;padding:13px;overflow-wrap:anywhere}
+  .notebox svg{margin-top:2px}
+  /* Pólizas: evitar las 3 columnas pequeñas y las fechas recortadas. */
+  .policylist{padding:11px;gap:12px}
+  .policycard{min-width:0}
+  .policytitle{padding:13px;gap:10px;align-items:flex-start;flex-wrap:wrap}
+  .policytitle .rowflex{min-width:0;flex:1 1 calc(100% - 55px)}
+  .policytitle .rowflex b{overflow-wrap:anywhere}
+  .policytitle .rowflex small{overflow-wrap:anywhere}
+  .policytitle>.tag{margin-left:49px;white-space:normal;line-height:1.4}
+  .policyinfo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:13px;gap:12px}
+  .policyinfo span{min-width:0;flex-basis:auto}
+  .policyinfo b{overflow-wrap:anywhere}
+  .installments{grid-template-columns:minmax(0,1fr)}
+  .installment{padding:12px;gap:9px;min-width:0;align-items:center}
+  .installment>div:first-child{min-width:0}
+  .installment-actions{flex:none;min-width:85px}
+  .installment .smallbtn{min-height:35px;white-space:normal;line-height:1.25}
+  /* Vencimientos con acciones en su propio renglón. */
+  .duelist{padding:0 12px}
+  .duerow{display:grid;grid-template-columns:50px minmax(0,1fr);gap:9px 12px;align-items:start;padding:16px 0}
+  .duecalendar{min-width:0;width:50px;padding:8px 5px;grid-row:1}
+  .duerow .rowflex{min-width:0;grid-column:2}
+  .dueamount{grid-column:2;grid-row:auto;min-width:0;flex-direction:row;justify-content:flex-start;align-items:center;flex-wrap:wrap;gap:9px}
+  .dueamount b{font-size:14px}
+  .duerow>.btn{grid-column:1/-1;width:100%;min-height:44px;margin:3px 0 0}
+  /* Las tablas se leen como tarjetas en lugar de requerir zoom lateral. */
+  .mobile-table{overflow:visible;padding:10px 11px}
+  .mobile-table table,.mobile-table tbody{display:block;width:100%;min-width:0}
+  .mobile-table thead{display:none}
+  .mobile-table tbody tr{display:block;width:100%;background:#fff;border:1px solid #e5edf2;border-radius:11px;overflow:hidden;margin:0 0 10px;box-shadow:0 2px 6px #183e5008}
+  .mobile-table tbody tr:last-child{margin-bottom:0}
+  .mobile-table tbody td{display:grid;width:100%;grid-template-columns:minmax(77px,32%) minmax(0,1fr);gap:3px 10px;align-items:start;text-align:right;padding:10px 11px;border-bottom:1px solid #edf1f4;min-height:38px;font-size:12px;overflow-wrap:anywhere}
+  .mobile-table tbody td:last-child{border-bottom:0}
+  .mobile-table tbody td::before{content:attr(data-label);display:block;grid-column:1;grid-row:1/span 4;text-align:left;color:#8a9aa6;font-size:10px;line-height:1.6;font-weight:800;text-transform:uppercase;letter-spacing:.1px}
+  .mobile-table tbody td>*{grid-column:2;justify-self:end;max-width:100%}
+  .mobile-table tbody td b{font-size:12px;text-align:right;overflow-wrap:anywhere}
+  .mobile-table tbody td small{text-align:right;overflow-wrap:anywhere;margin-top:0}
+  .mobile-table tbody td .textbutton{min-height:34px;padding:6px 10px}
+  .mobile-table tbody td .tag{justify-self:end}
+  .mobile-table .empty{padding:28px 10px}
+  /* Formularios / hoja de captura: iOS no debe hacer zoom al enfocar. */
+  .veil{align-items:flex-end;padding:0;z-index:100}
+  .modal{width:100%;max-width:100%;max-height:calc(100dvh - env(safe-area-inset-top,0px) - 10px);border-radius:19px 19px 0 0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}
+  .modal-head{padding:17px 16px;min-height:58px}
+  .modal-head h2{font-size:17px;line-height:1.3}
+  .modal-head .iconbtn{min-width:42px;min-height:42px}
+  .formgrid{grid-template-columns:minmax(0,1fr);padding:15px 15px 18px;gap:15px}
+  .formgrid label,.formgrid .span2{grid-column:1/-1;min-width:0}
+  .formgrid input,.formgrid select,.formgrid textarea{font-size:16px;min-height:46px;width:100%;max-width:100%}
+  .formactions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:5px 0 0}
+  .formactions .btn{min-height:46px;white-space:normal}
+  .closebalance{gap:12px;flex-wrap:wrap}
+  .closebalance strong{overflow-wrap:anywhere}
+  .settingspanel,.push-settings{width:100%;max-width:100%;padding:17px 14px}
+  .settingspanel input:not([type=checkbox]),.settingspanel select,.alert-toolbar select{font-size:16px;max-width:100%;min-width:0}
+  .settingspanel>label{min-width:0}
+  .notification-pref-list{min-width:0}
+  .notification-pref{min-width:0}
+  .notification-pref span{min-width:0}
+  .push-heading{align-items:flex-start}
+  .push-detail-grid{gap:9px}
+  .push-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .push-actions .btn{width:100%;min-width:0;padding:9px 8px;min-height:46px;line-height:1.35;white-space:normal}
+  .push-state>span:first-child{min-width:0;overflow-wrap:anywhere}
+  .push-feedback,.push-disclaimer{overflow-wrap:anywhere}
+  .alertrow{min-width:0}
+  .alert-actions{display:flex;align-items:stretch}
+  .alert-actions .btn{min-height:42px;white-space:normal}
+  .toast{position:fixed;top:calc(76px + env(safe-area-inset-top,0px));left:12px;right:12px;max-width:none;z-index:80;line-height:1.45;overflow-wrap:anywhere}
+  .toast button{min-width:34px;min-height:34px;margin-left:auto}
+  /* Login: el teclado y la muesca nunca deben tapar el formulario. */
+  .login-shell{min-height:100dvh;max-width:100%;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+  .login-art{min-height:0;padding:22px 20px 19px}
+  .login-main{width:100%;min-width:0;padding:23px 18px calc(30px + env(safe-area-inset-bottom,0px));align-items:flex-start}
+  .login-card{width:100%;min-width:0}
+  .login-brand{margin-bottom:27px}
+  .login-card h2{font-size:23px;line-height:1.3}
+  .login-description{margin-bottom:22px}
+  .login-form input{font-size:16px;min-height:48px}
+  .login-pass .login-eye{width:42px;height:42px;top:3px;right:4px}
+  .login-submit{min-height:49px}
+  .login-notice{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+}
+@media(max-width:380px){
+  .topbar{padding:0 10px}
+  .topbar h1{font-size:14px;max-width:42vw}
+  .top-left,.top-right{gap:5px}
+  .topbar .iconbtn{width:37px;height:38px}
+  .content{padding-left:9px;padding-right:9px}
+  .numbercard{padding:12px 9px}
+  .numbercard strong{font-size:16px}
+  .numbertop{font-size:10px}
+  .push-detail-grid{grid-template-columns:minmax(0,1fr)}
+  .push-actions{grid-template-columns:minmax(0,1fr)}
+  .alert-actions .btn{flex:1}
+  .login-art h1{font-size:18px}
+}
+@media(hover:none) and (pointer:coarse){
+  .btn,.smallbtn,.textbutton,.iconbtn{touch-action:manipulation}
+  .smallbtn{min-height:38px}
+}
